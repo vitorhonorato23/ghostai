@@ -1,0 +1,16 @@
+app = "your-app-name"  # Replace this with your actual Fly.io app name
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  OLLAMA_URL = "https://a395-177-76-41-247.ngrok-free.app"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+
+[vm]
+  size = "shared-cpu-1x"
+  memory = 256
