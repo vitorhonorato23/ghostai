@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ character.name }} & {{ character2.name }} Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .char-name {
+      font-weight: bold;
+      color: #ffcc00;
+    }
+    .chat-box {
+      width: 100%;
+      max-width: 700px;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-y: auto;
+      margin-bottom: 30px;
+    }
+    .chat-message {
+      margin-bottom: 15px;
+    }
+    .char1 .sender {
+      color: #4fc3f7;
+    }
+    .char2 .sender {
+      color: #ff8a65;
+    }
+    .sender {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .bubble {
+      background-color: #2c2c2c;
+      padding: 12px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+    .char1 .bubble {
+      background-color: #0d47a1;
+    }
+    .char2 .bubble {
+      background-color: #bf360c;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 {{ character.name }} <span style="color:#555">vs</span> {{ character2.name }}</h1>
+
+  <div class="chat-box">
+    {% for idx, message in enumerate(history) %}
+      {% if message.role == 'assistant' %}
+        <div class="chat-message {{ 'char1' if loop.index0 % 2 == 1 else 'char2' }}">
+          <div class="sender">{{ character.name if loop.index0 % 2 == 1 else character2.name }}</div>
+          <div class="bubble">{{ message.content }}</div>
+        </div>
+      {% elif message.role == 'user' %}
+        <div class="chat-message">
+          <div class="sender">Narrator</div>
+          <div class="bubble">{{ message.content }}</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <form method="post" action="/chat">
+    <input type="hidden" name="name" value="{{ character.name }}">
+    <input type="hidden" name="personality" value="{{ character.personality }}">
+    <input type="hidden" name="style" value="{{ character.style }}">
+    <input type="hidden" name="context" value="{{ character.context }}">
+    <input type="hidden" name="name2" value="{{ character2.name }}">
+    <input type="hidden" name="personality2" value="{{ character2.personality }}">
+    <input type="hidden" name="style2" value="{{ character2.style }}">
+    <input type="hidden" name="context2" value="{{ character2.context }}">
+    <textarea name="prompt" placeholder="Add a narration or external input..." required></textarea>
+    <button type="submit">Continue</button>
+  </form>
+
+  <form method="post" action="/clear">
+    <button type="submit" class="clear-button">🗑️ Clear Conversation</button>
+  </form>
+</body>
+</html>

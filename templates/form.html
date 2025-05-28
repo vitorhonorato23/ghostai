@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Your Character</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #00bcd4;
+      margin-bottom: 30px;
+    }
+
+    .char-form {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .char-form input,
+    .char-form textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #2a2a2a;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      resize: none;
+    }
+
+    .char-form textarea {
+      height: 100px;
+    }
+
+    .char-form button {
+      margin-top: 15px;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #00bcd4;
+      color: #121212;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .char-form button:hover {
+      background-color: #0097a7;
+    }
+
+    .form-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎭 Create Your Character</h1>
+
+  <form method="post" action="/chat" class="char-form">
+    <div>
+      <label class="form-label">Character Name</label>
+      <input type="text" name="name" placeholder="e.g. Luna" required>
+    </div>
+
+    <div>
+      <label class="form-label">Personality</label>
+      <textarea name="personality" placeholder="e.g. A shy alien learning about Earth..." required></textarea>
+    </div>
+
+    <div>
+      <label class="form-label">Speech Style</label>
+      <textarea name="style" placeholder="e.g. Childlike wonder, curious tone..." required></textarea>
+    </div>
+
+    <div>
+      <label class="form-label">Context (optional)</label>
+      <textarea name="context" placeholder="e.g. She just crash-landed near a human town."></textarea>
+    </div>
+
+    <div>
+      <label class="form-label">Your First Message</label>
+      <textarea name="prompt" placeholder="Say something to start the conversation..." required></textarea>
+    </div>
+
+    <button type="submit">Start Chat</button>
+    <p><a href="/logout">Logout</a></p>
+  </form>
+</body>
+</html>
