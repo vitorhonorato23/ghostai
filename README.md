@@ -1,1 +1,1 @@
-# ghostia
+# GhostAI
