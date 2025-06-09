@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from services.character_service import CharacterService
+from database import SessionLocal
 import requests
 
 router = APIRouter()
@@ -34,6 +36,19 @@ async def chat_entry(
         return RedirectResponse(url="/login")
 
     history = request.session.get("history", [])
+
+    db = SessionLocal()
+    user_id = request.session["user_id"]
+    character_service = CharacterService(db)
+
+    # Reuse or create the character
+    character = character_service.get_or_create(
+        name=name,
+        personality=personality,
+        style=style,
+        context=context,
+        creator_id=user_id
+    )
 
     if not history:
         history.append({"role": "system", "content": generate_character_prompt(name, personality, style, context)})
