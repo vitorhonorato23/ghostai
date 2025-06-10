@@ -10,3 +10,4 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     
     characters = relationship("Character", back_populates="creator")
+    conversations = relationship("Conversation", back_populates="user")
