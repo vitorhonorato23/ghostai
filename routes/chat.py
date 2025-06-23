@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from services.character_service import CharacterService
 from database import SessionLocal
+from services.conversation_service import ConversationService
+from services.message_service import MessageService
 import requests
 
 router = APIRouter()
@@ -23,8 +25,8 @@ def generate_character_prompt(name, personality, style, context=None):
     return prompt.strip()
 
 
-@router.post("/chat", response_class=HTMLResponse)
-async def chat_entry(
+@router.post("/newChat", response_class=HTMLResponse)
+async def new_chat_entry(
     request: Request,
     name: str = Form(...),
     personality: str = Form(...),
@@ -40,6 +42,8 @@ async def chat_entry(
     db = SessionLocal()
     user_id = request.session["user_id"]
     character_service = CharacterService(db)
+    conversation_service = ConversationService(db)
+    message_service = MessageService(db)
 
     # Reuse or create the character
     character = character_service.get_or_create(
@@ -50,19 +54,84 @@ async def chat_entry(
         creator_id=user_id
     )
 
-    if not history:
-        history.append({"role": "system", "content": generate_character_prompt(name, personality, style, context)})
+    conversation = conversation_service.create(
+        user_id=user_id,
+        character_id=character.id,
+        title=f"Chat with {character.name}"
+    )
+    conversation_id = conversation.id
+    request.session["conversation_id"] = conversation_id
 
-        request.session["character"] = {
-            "name": name, "personality": personality, "style": style, "context": context
-        }
+    message_service.add_message(
+        conversation_id=conversation_id,
+        role="user",
+        content=prompt
+    )
 
+    history.append({"role": "system", "content": generate_character_prompt(name, personality, style, context)})
     history.append({"role": "user", "content": prompt})
 
     try:
         response = requests.post(OLLAMA_URL, json={"model": OLLAMA_MODEL, "messages": history, "stream": False})
         response.raise_for_status()
         ai_message = response.json().get("message", {}).get("content", "").strip()
+        message_service.add_message(
+            conversation_id=conversation_id,
+            role="assistant",
+            content=ai_message
+        )
+        history.append({"role": "assistant", "content": ai_message})
+
+        request.session["history"] = history
+
+    except Exception as e:
+        ai_message = f"An error occurred: {e}"
+
+    return templates.TemplateResponse("chat.html", {
+        "request": request,
+        "chat_response": ai_message,
+        "user_prompt": "",
+        "history": history,
+        "character": request.session.get("character", {})
+    })
+
+@router.post("/chat", response_class=HTMLResponse)
+async def chat_entry(
+    request: Request,
+    name: str = Form(...),
+    personality: str = Form(...),
+    style: str = Form(...),
+    context: str = Form(None),
+    prompt: str = Form(...)
+):
+    if not request.session.get("user_id"):
+        return RedirectResponse(url="/login")
+    
+    history = request.session.get("history")
+
+    db = SessionLocal()
+    user_id = request.session["user_id"]
+    conversation_id = request.session["conversation_id"]
+    character_service = CharacterService(db)
+    conversation_service = ConversationService(db)
+    message_service = MessageService(db)
+
+    message_service.add_message(
+        conversation_id=conversation_id,
+        role="user",
+        content=prompt
+    )
+    history.append({"role": "user", "content": prompt})
+
+    try:
+        response = requests.post(OLLAMA_URL, json={"model": OLLAMA_MODEL, "messages": history, "stream": False})
+        response.raise_for_status()
+        ai_message = response.json().get("message", {}).get("content", "").strip()
+        message_service.add_message(
+            conversation_id=conversation_id,
+            role="assistant",
+            content=ai_message
+        )
         history.append({"role": "assistant", "content": ai_message})
 
         request.session["history"] = history
