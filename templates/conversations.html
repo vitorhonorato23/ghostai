@@ -9,12 +9,11 @@
       background-color: #121212;
       color: #eee;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
     }
 
     h1 {
       color: #fff;
-      text-align: center;
     }
 
     .conversation-list {
@@ -50,32 +49,35 @@
     .conversation-card a:hover {
       text-decoration: underline;
     }
-
-    a.back-link {
-      color: #00bcd4;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
-  <a class="back-link" href="/">← Back to Chat</a>
-  <h1>💬 Your Conversations</h1>
+  <div class="layout">
+    <nav class="sidebar">
+      <ul>
+        <li><a href="/characters">Characters</a></li>
+        <li><a href="/conversations">Conversations</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="main-content">
+      <h1>💬 Your Conversations</h1>
 
-  {% if conversations %}
-    <div class="conversation-list">
-      {% for convo in conversations %}
-        <div class="conversation-card">
-          <h2>{{ convo.title }}</h2>
-          <p><strong>Character:</strong> {{ convo.character.name }}</p>
-          <p><strong>Started:</strong> {{ convo.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
-          <p><a href="/resume/{{ convo.id }}">▶ Resume Conversation</a></p>
+      {% if conversations %}
+        <div class="conversation-list">
+          {% for convo in conversations %}
+            <div class="conversation-card">
+              <h2>{{ convo.title }}</h2>
+              <p><strong>Character:</strong> {{ convo.character.name }}</p>
+              <p><strong>Started:</strong> {{ convo.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+              <p><a href="/resume/{{ convo.id }}">▶ Resume Conversation</a></p>
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
+      {% else %}
+        <p>You have no conversations yet.</p>
+      {% endif %}
     </div>
-  {% else %}
-    <p>You have no conversations yet.</p>
-  {% endif %}
+  </div>
 </body>
 </html>
