@@ -9,10 +9,7 @@
       background-color: #121212;
       color: #ffffff;
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
+      margin: 0;
     }
 
     h1 {
@@ -70,38 +67,46 @@
   </style>
 </head>
 <body>
-  <h1>🎭 Create Your Character</h1>
+  <div class="layout">
+    <nav class="sidebar">
+      <ul>
+        <li><a href="/characters">Characters</a></li>
+        <li><a href="/conversations">Conversations</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="main-content">
+      <h1>🎭 Create Your Character</h1>
 
-  <form method="post" action="/newChat" class="char-form">
-    <div>
-      <label class="form-label">Character Name</label>
-      <input type="text" name="name" placeholder="e.g. Luna" required>
+      <form method="post" action="/newChat" class="char-form">
+        <div>
+          <label class="form-label">Character Name</label>
+          <input type="text" name="name" placeholder="e.g. Luna" required>
+        </div>
+
+        <div>
+          <label class="form-label">Personality</label>
+          <textarea name="personality" placeholder="e.g. A shy alien learning about Earth..." required></textarea>
+        </div>
+
+        <div>
+          <label class="form-label">Speech Style</label>
+          <textarea name="style" placeholder="e.g. Childlike wonder, curious tone..." required></textarea>
+        </div>
+
+        <div>
+          <label class="form-label">Context (optional)</label>
+          <textarea name="context" placeholder="e.g. She just crash-landed near a human town."></textarea>
+        </div>
+
+        <div>
+          <label class="form-label">Your First Message</label>
+          <textarea name="prompt" placeholder="Say something to start the conversation..." required></textarea>
+        </div>
+
+        <button type="submit">Start Chat</button>
+      </form>
     </div>
-
-    <div>
-      <label class="form-label">Personality</label>
-      <textarea name="personality" placeholder="e.g. A shy alien learning about Earth..." required></textarea>
-    </div>
-
-    <div>
-      <label class="form-label">Speech Style</label>
-      <textarea name="style" placeholder="e.g. Childlike wonder, curious tone..." required></textarea>
-    </div>
-
-    <div>
-      <label class="form-label">Context (optional)</label>
-      <textarea name="context" placeholder="e.g. She just crash-landed near a human town."></textarea>
-    </div>
-
-    <div>
-      <label class="form-label">Your First Message</label>
-      <textarea name="prompt" placeholder="Say something to start the conversation..." required></textarea>
-    </div>
-
-    <button type="submit">Start Chat</button>
-    <p><a href="/characters">Characters</a></p>
-    <p><a href="/conversations">Conversations</a></p>
-    <p><a href="/logout">Logout</a></p>
-  </form>
+  </div>
 </body>
 </html>

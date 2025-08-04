@@ -6,44 +6,54 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>💬 Talking to <span class="char-name">{{ character.name }}</span></h1>
+  <div class="layout">
+    <nav class="sidebar">
+      <ul>
+        <li><a href="/characters">Characters</a></li>
+        <li><a href="/conversations">Conversations</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="main-content">
+      <h1>💬 Talking to <span class="char-name">{{ character.name }}</span></h1>
 
-  <div class="chat-box">
-    {% for message in history %}
-      <div class="chat-message {{ message.role }}">
-        <div class="sender">{{ message.role.capitalize() }}</div>
+      <div class="chat-box">
+        {% for message in history %}
+          <div class="chat-message {{ message.role }}">
+            <div class="sender">{{ message.role.capitalize() }}</div>
 
-        {% if edit_index == loop.index0 %}
-          <!-- Editing Mode -->
-          <form method="post" action="/inline-edit/{{ loop.index0 }}">
-            <textarea name="content" rows="4" style="width: 100%;">{{ message.content }}</textarea>
-            <button type="submit">💾 Save</button>
-            <a href="/resume/{{ session_conversation_id }}">Cancel</a>
-          </form>
-        {% else %}
-          <div class="bubble">{{ message.content }}</div>
-          {% if message.role in ['user', 'assistant'] %}
-            <form method="get" action="/inline-edit/{{ loop.index0 }}">
-              <button type="submit">✏️ Edit</button>
-            </form>
-          {% endif %}
-        {% endif %}
+            {% if edit_index == loop.index0 %}
+              <!-- Editing Mode -->
+              <form method="post" action="/inline-edit/{{ loop.index0 }}">
+                <textarea name="content" rows="4" style="width: 100%;">{{ message.content }}</textarea>
+                <button type="submit">💾 Save</button>
+                <a href="/resume/{{ session_conversation_id }}">Cancel</a>
+              </form>
+            {% else %}
+              <div class="bubble">{{ message.content }}</div>
+              {% if message.role in ['user', 'assistant'] %}
+                <form method="get" action="/inline-edit/{{ loop.index0 }}">
+                  <button type="submit">✏️ Edit</button>
+                </form>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endfor %}
       </div>
-    {% endfor %}
+
+      <form method="post" action="/chat" class="chat-form">
+        <input type="hidden" name="name" value="{{ character.name }}">
+        <input type="hidden" name="personality" value="{{ character.personality }}">
+        <input type="hidden" name="style" value="{{ character.style }}">
+        <input type="hidden" name="context" value="{{ character.context }}">
+        <textarea name="prompt" placeholder="Your message..." required></textarea>
+        <button type="submit">Send</button>
+      </form>
+
+      <form method="post" action="/clear" class="clear-form">
+        <button type="submit" class="clear-button">🗑️ Clear Conversation</button>
+      </form>
+    </div>
   </div>
-
-  <form method="post" action="/chat" class="chat-form">
-    <input type="hidden" name="name" value="{{ character.name }}">
-    <input type="hidden" name="personality" value="{{ character.personality }}">
-    <input type="hidden" name="style" value="{{ character.style }}">
-    <input type="hidden" name="context" value="{{ character.context }}">
-    <textarea name="prompt" placeholder="Your message..." required></textarea>
-    <button type="submit">Send</button>
-  </form>
-
-  <form method="post" action="/clear" class="clear-form">
-    <button type="submit" class="clear-button">🗑️ Clear Conversation</button>
-    <p><a href="/logout">Logout</a></p>
-  </form>
 </body>
 </html>

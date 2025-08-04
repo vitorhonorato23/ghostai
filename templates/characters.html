@@ -9,12 +9,11 @@
       background-color: #121212;
       color: #eee;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
     }
 
     h1 {
       color: #fff;
-      text-align: center;
     }
 
     .character-list {
@@ -41,34 +40,37 @@
       margin: 5px 0;
       color: #ccc;
     }
-
-    a.back-link {
-      color: #00bcd4;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
-  <a class="back-link" href="/">← Back to Chat</a>
-  <h1>🎭 Your Characters</h1>
+  <div class="layout">
+    <nav class="sidebar">
+      <ul>
+        <li><a href="/characters">Characters</a></li>
+        <li><a href="/conversations">Conversations</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="main-content">
+      <h1>🎭 Your Characters</h1>
 
-  {% if characters %}
-    <div class="character-list">
-      {% for character in characters %}
-        <div class="character-card">
-          <h2>{{ character.name }}</h2>
-          <p><strong>Personality:</strong> {{ character.personality }}</p>
-          <p><strong>Style:</strong> {{ character.style }}</p>
-          {% if character.context %}
-          <p><strong>Context:</strong> {{ character.context }}</p>
-          {% endif %}
+      {% if characters %}
+        <div class="character-list">
+          {% for character in characters %}
+            <div class="character-card">
+              <h2>{{ character.name }}</h2>
+              <p><strong>Personality:</strong> {{ character.personality }}</p>
+              <p><strong>Style:</strong> {{ character.style }}</p>
+              {% if character.context %}
+              <p><strong>Context:</strong> {{ character.context }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
+      {% else %}
+        <p>No characters found.</p>
+      {% endif %}
     </div>
-  {% else %}
-    <p>No characters found.</p>
-  {% endif %}
+  </div>
 </body>
 </html>
