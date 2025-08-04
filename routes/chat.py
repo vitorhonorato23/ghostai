@@ -152,3 +152,49 @@ async def chat_entry(
 async def clear_conversation(request: Request):
     request.session.pop("history", None)
     return RedirectResponse(url="/", status_code=303)
+
+@router.get("/inline-edit/{index}", response_class=HTMLResponse)
+async def start_inline_edit(index: int, request: Request):
+    request.session["edit_index"] = index
+    convo_id = request.session.get("conversation_id")
+    return RedirectResponse(url=f"/resume/{convo_id}")
+
+@router.post("/inline-edit/{index}", response_class=HTMLResponse)
+async def save_inline_edit(request: Request, index: int, content: str = Form(...)):
+    print("POST /inline-edit route loaded")
+    history = request.session.get("history", [])
+    print(history)
+    if index < 0 or index >= len(history):
+        print("POST /inline-edit route loaded6")
+        return RedirectResponse("/")
+    print("POST /inline-edit route loaded4")
+    # Update message in session
+    history[index]["content"] = content
+    history = history[:index + 1]
+    request.session["history"] = history
+    request.session.pop("edit_index", None)
+    print("POST /inline-edit route loaded 2")
+    db = SessionLocal()
+    conversation_id = request.session["conversation_id"]
+    msg_service = MessageService(db)
+    all_msgs = msg_service.get_by_conversation(conversation_id)
+
+    # Update message in DB
+    msg_service.update_content(all_msgs[index].id, content)
+
+    # Delete later messages
+    for m in all_msgs[index+1:]:
+        msg_service.delete(m.id)
+    print("POST /inline-edit route loaded 3")
+    # Regenerate assistant reply if editing a user message
+    if history[index]["role"] == "user":
+        response = requests.post(
+            OLLAMA_URL,
+            json={"model": OLLAMA_MODEL, "messages": history, "stream": False},
+        )
+        ai_message = response.json().get("message", {}).get("content", "").strip()
+        history.append({"role": "assistant", "content": ai_message})
+        msg_service.add_message(conversation_id, "assistant", ai_message)
+        request.session["history"] = history
+
+    return RedirectResponse(url=f"/resume/{conversation_id}", status_code=303)

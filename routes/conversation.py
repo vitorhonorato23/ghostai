@@ -50,10 +50,14 @@ async def resume_conversation(conversation_id: int, request: Request):
     history = [{"role": m.role, "content": m.content} for m in messages]
     request.session["history"] = history
 
+    edit_index = request.session.pop("edit_index", None)
+
     return templates.TemplateResponse("chat.html", {
         "request": request,
         "chat_response": "",
         "user_prompt": "",
         "history": history,
-        "character": request.session["character"]
+        "character": request.session["character"],
+        "edit_index": edit_index,
+        "session_conversation_id": conversation_id
     })

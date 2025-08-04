@@ -15,3 +15,16 @@ class MessageService:
 
     def get_by_conversation(self, conversation_id: int):
         return self.db.query(Message).filter_by(conversation_id=conversation_id).order_by(Message.timestamp).all()
+    
+    def update_content(self, message_id: int, new_content: str):
+        message = self.db.query(Message).filter_by(id=message_id).first()
+        if message:
+            message.content = new_content
+            self.db.commit()
+        return message
+
+    def delete(self, message_id: int):
+        message = self.db.query(Message).filter_by(id=message_id).first()
+        if message:
+            self.db.delete(message)
+            self.db.commit()
