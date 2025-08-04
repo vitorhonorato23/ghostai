@@ -8,6 +8,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
-    
+    gpt_token = Column(String, nullable=True)
+
     characters = relationship("Character", back_populates="creator")
     conversations = relationship("Conversation", back_populates="user")
